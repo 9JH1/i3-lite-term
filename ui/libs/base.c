@@ -51,14 +51,19 @@ int main(const int argc, const char *argv[]){
 	// manage args 
 	if(parse_arguments(argc,argv) == 0){
 		if(is_all_triggered() == 0){
-			for(int i=0;i>argc;i++) 
-				printf("%s", argv[i]);
-			printf("\n");
+			// get values
+			printf("%s %s %s %s %s \"%s\"",
+					argument_value(gx),
+					argument_value(gy),
+					argument_value(wc),
+					argument_value(wr),
+					argument_value(fs),
+					argument_value(pc));
 		} else {
 			phelp();
 			printf("ALL arguments need to be triggered\n");
+			return 1;
 		}
-
 	} else {
 		phelp();
 		return 1;

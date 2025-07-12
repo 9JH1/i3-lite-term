@@ -30,7 +30,7 @@ typedef enum {
 argument *argument_list;
 int argument_list_index    = 0;
 int argument_list_capacity = 0;
-const int noquiet          = -1;
+const int noquiet          = 1;
 
 #define printc(a,c, ...) printc_implicit(a,__LINE__,__FILE__,c,##__VA_ARGS__)
 int printc_implicit(mode mode, const int LINE,const char* FILE,  const char *format, ...){
@@ -124,21 +124,12 @@ int set_bulk_argument(const char *arguments[],const int argument_size, const int
 				.FLAG_NAME = arguments[i],
 				.takes_value = input_type,
 				});
-		printc(VERBOSE,"Info: added bulk argument: ",arguments[i]);
+		printc(VERBOSE,"added bulk argument: %s",arguments[i]);
 	}
 	return 1;
 }
 
-// EXPERIMENTAL 
-int is_all_triggered(){
-	if(validate_argument_list() != 0) return -1;
-	for(int i=0;i<argument_list_index;i++){
-		const argument *local = &argument_list[i];
-		if(!local) return -2;
-	  if(argument_list[i].triggered) return 1;
-	}
-	return 0;
-}
+
 
 // Print all of the arguments that have
 // been set so far, this will be called
@@ -314,13 +305,29 @@ char *argument_value(const argument *local) {
   }
 
   if (local->triggered) {
-
-    return local->value;
+		if(local->value) return local->value;
+		else {
+			printc(ERROR, "argument '%s' is triggered but has no value\n",local->name);
+			return "";
+		}
   } else {
     printc(ERROR,"argument '%s' does not have a value\n", local->name);
     return "";
   }
   printc(ERROR,"argument '%s' has not been run\n",local->name);
 	printc(ERROR,"^--> use '*argument_run(argument *)'\n");
+	return "";
 }
 
+// EXPERIMENTAL 
+int is_all_triggered(){
+	if(validate_argument_list() != 0) return -1;
+	for(int i=0;i<argument_list_index;i++){
+		const argument *local = &argument_list[i];
+	  if(argument_run(local) != 0){
+			printc(VERBOSE,"%s flag not triggered",local->name);
+			return 1;
+		}
+	}
+	return 0;
+}
