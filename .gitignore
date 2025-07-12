@@ -1,0 +1,5 @@
+conf/.zsh_history
+./conf/.zsh_history
+a/conf/.zsh_history
+/conf/.zsh_history
+*.zsh_history
